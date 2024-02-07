@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+//import { HttpClient, HttpParams } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -8,6 +8,9 @@ import { map } from 'rxjs/operators';
 import { environment } from './../../environments/environment';
 import { City } from './city';
 import { Country } from './../countries/country';
+import { BaseFormComponent } from '../base-form.component';
+import { CityService } from './city.service';
+import { ApiResult } from '../base.service';
 
 @Component({
   selector: 'app-city-edit',
@@ -15,13 +18,10 @@ import { Country } from './../countries/country';
   styleUrls: ['./city-edit.component.scss']
 })
 
-export class CityEditComponent implements OnInit {
+export class CityEditComponent extends BaseFormComponent implements OnInit {
 
   // the view title
   title?: string;
-
-  // the form model
-  form!: FormGroup;
 
   // the city object to edit or create
   city?: City;
@@ -37,14 +37,21 @@ export class CityEditComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient) {
+    private cityService: CityService) {
+    super();
   }
 
   ngOnInit() {
     this.form = new FormGroup({
       name: new FormControl('', Validators.required),
-      lat: new FormControl('', Validators.required),
-      lon: new FormControl('', Validators.required),
+      lat: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[-]?[0-9]{1,3}(\.[0-9]{1,4})?$/)
+      ]),
+      lon: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[-]?[0-9]{1,3}(\.[0-9]{1,4})?$/)
+      ]),
       countryId: new FormControl('', Validators.required)
     }, null, this.isDupeCity());
 
@@ -62,7 +69,7 @@ export class CityEditComponent implements OnInit {
       city.countryId = +this.form.controls['countryId'].value;
 
       var url = environment.baseUrl + 'api/Cities/IsDupeCity';
-      return this.http.post<boolean>(url, city).pipe(map(result => {
+      return this.cityService.isDupeCity(city).pipe(map(result => {
 
         return (result ? { isDupeCity: true } : null);
       }));
@@ -82,8 +89,7 @@ export class CityEditComponent implements OnInit {
       // EDIT MODE
 
       // fetch the city from the server
-      var url = environment.baseUrl + 'api/Cities/' + this.id;
-      this.http.get<City>(url).subscribe(result => {
+      this.cityService.get(this.id).subscribe(result => {
         this.city = result;
         this.title = "Edit - " + this.city.name;
 
@@ -100,12 +106,14 @@ export class CityEditComponent implements OnInit {
 
   loadCountries() {
     // fetch all the countries from the server
-    var url = environment.baseUrl + 'api/Countries';
-    var params = new HttpParams()
-      .set("pageIndex", "0")
-      .set("pageSize", "9999")
-      .set("sortColumn", "name");
-    this.http.get<any>(url, { params }).subscribe(result => {
+    this.cityService.getCountries(
+      0,
+      9999,
+      "name",
+      "asc",
+      null,
+      null,
+    ).subscribe(result => {
       this.countries = result.data;
     }, error => console.error(error));
   }
@@ -120,9 +128,8 @@ export class CityEditComponent implements OnInit {
 
       if (this.id) {
         // EDIT mode
-        var url = environment.baseUrl + 'api/Cities/' + city.id;
-        this.http
-          .put<City>(url, city)
+        this.cityService
+          .put(city)
           .subscribe(result => {
             console.log("City " + city!.id + " has been updated.");
             // go back to cities view
@@ -131,9 +138,8 @@ export class CityEditComponent implements OnInit {
       }
       else {
         // ADD NEW mode
-        var url = environment.baseUrl + 'api/Cities';
-        this.http
-          .post<City>(url, city)
+        this.cityService
+          .post(city)
           .subscribe(result => {
             console.log("City " + result.id + " has been created.");
             // go back to cities view
