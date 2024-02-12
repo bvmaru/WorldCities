@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using WorldCitiesAPI.Data;
@@ -64,6 +65,7 @@ namespace WorldCitiesAPI.Controllers
 
         // PUT: api/Countries/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "RegisteredUser")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCountry(int id, Country country)
         {
@@ -95,6 +97,7 @@ namespace WorldCitiesAPI.Controllers
 
         // POST: api/Countries
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "RegisteredUser")]
         [HttpPost]
         public async Task<ActionResult<Country>> PostCountry(Country country)
         {
@@ -109,6 +112,7 @@ namespace WorldCitiesAPI.Controllers
         }
 
         // DELETE: api/Countries/5
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCountry(int id)
         {
@@ -133,6 +137,7 @@ namespace WorldCitiesAPI.Controllers
             return (_context.Countries?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+        [Authorize(Roles = "RegisteredUser")]
         [HttpPost]
         [Route("IsDupeField")]
         public bool IsDupeField(

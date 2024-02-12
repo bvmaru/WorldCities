@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from './auth/auth.service';
 
 
 @Component({
@@ -7,6 +7,12 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent{
+export class AppComponent implements OnInit {
   title = 'WorldCities';
+
+  constructor(private authService: AuthService) { }
+
+  ngOnInit(): void {
+    this.authService.init();
+  }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models;
@@ -10,6 +11,14 @@ namespace WorldCitiesAPI.Controllers
     public class CitiesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        //public ILogger<CitiesController> Logger { get; set; }
+
+        //public CitiesController(ApplicationDbContext context, ILogger<CitiesController> logger)
+        //{
+        //    _context = context;
+        //    Logger = logger;
+        //    Logger.LogInformation("SampleController initialized.");
+        //}
 
         public CitiesController(ApplicationDbContext context)
         {
@@ -71,6 +80,7 @@ namespace WorldCitiesAPI.Controllers
 
         // PUT: api/Cities/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "RegisteredUser")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCity(int id, City city)
         {
@@ -102,6 +112,7 @@ namespace WorldCitiesAPI.Controllers
 
         // POST: api/Cities
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "RegisteredUser")]
         [HttpPost]
         public async Task<ActionResult<City>> PostCity(City city)
         {
@@ -116,6 +127,7 @@ namespace WorldCitiesAPI.Controllers
         }
 
         // DELETE: api/Cities/5
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCity(int id)
         {
@@ -140,6 +152,7 @@ namespace WorldCitiesAPI.Controllers
             return (_context.Cities?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+        [Authorize(Roles = "RegisteredUser")]
         [HttpPost]
         [Route("IsDupeCity")]
         public bool IsDupeCity(City city)

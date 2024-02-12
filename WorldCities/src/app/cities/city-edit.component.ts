@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 //import { HttpClient, HttpParams } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
 import { environment } from './../../environments/environment';
 import { City } from './city';
@@ -18,7 +18,7 @@ import { ApiResult } from '../base.service';
   styleUrls: ['./city-edit.component.scss']
 })
 
-export class CityEditComponent extends BaseFormComponent implements OnInit {
+export class CityEditComponent extends BaseFormComponent implements OnInit, OnDestroy {
 
   // the view title
   title?: string;
@@ -32,7 +32,10 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
   id?: number;
 
   // the countries array for the select
-  countries?: Country[]
+  countries?: Observable<Country[]>;
+
+  // Activity Log (for debugging purposes)
+  //activityLog: string = '';
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -40,6 +43,8 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
     private cityService: CityService) {
     super();
   }
+
+  private destroySubject = new Subject();
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -55,7 +60,44 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
       countryId: new FormControl('', Validators.required)
     }, null, this.isDupeCity());
 
+    // react to form changes
+    this.form.valueChanges
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(() => {
+        if (!this.form.dirty) {
+          this.log("Form Model has been loaded.");
+        }
+        else {
+          this.log("Form was updated by the user.");
+        }
+      });
+
+    // react to changes in the form.name control
+    this.form.get("name")!.valueChanges
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(() => {
+        if (!this.form.dirty) {
+          this.log("Name has been loaded with initial values.");
+        }
+        else {
+          this.log("Name was updated by the user.");
+        }
+      });
+
     this.loadData();
+  }
+
+  ngOnDestroy() {
+    // emit a value with the takeUntil notifier
+    this.destroySubject.next(true);
+    // complete the subject
+    this.destroySubject.complete();
+  }
+
+  log(str: string) {
+    console.log( "["
+      + new Date().toLocaleString()
+      + "] " + str);
   }
 
   isDupeCity(): AsyncValidatorFn {
@@ -106,16 +148,15 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
 
   loadCountries() {
     // fetch all the countries from the server
-    this.cityService.getCountries(
-      0,
-      9999,
-      "name",
-      "asc",
-      null,
-      null,
-    ).subscribe(result => {
-      this.countries = result.data;
-    }, error => console.error(error));
+    this.countries = this.cityService
+      .getCountries(
+        0,
+        9999,
+        "name",
+        "asc",
+        null,
+        null,
+      ).pipe(map(x => x.data));
   }
 
   onSubmit() {
