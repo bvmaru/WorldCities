@@ -64,35 +64,20 @@ namespace WorldCitiesAPI.Data
             string? filterColumn = null, string?
             filterQuery = null)
         {
-            if (!string.IsNullOrEmpty(filterColumn)
-                && !string.IsNullOrEmpty(filterQuery)
-                && IsValidProperty(filterColumn))
+            if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterQuery) && IsValidProperty(filterColumn))
             {
-                source = source.Where(
-                string.Format("{0}.StartsWith(@0)",
-                filterColumn),
-                filterQuery);
+                source = source.Where(string.Format("{0}.StartsWith(@0)", filterColumn), filterQuery);
             }
 
             var count = await source.CountAsync();
 
-            if (!string.IsNullOrEmpty(sortColumn)
-            && IsValidProperty(sortColumn))
+            if (!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
             {
-                sortOrder = !string.IsNullOrEmpty(sortOrder)
-                && sortOrder.ToUpper() == "ASC"
-                    ? "ASC"
-                    : "DESC";
-                source = source.OrderBy(
-                    string.Format(
-                        "{0} {1}",
-                        sortColumn,
-                        sortOrder)
-                );
+                sortOrder = !string.IsNullOrEmpty(sortOrder) && sortOrder.ToUpper() == "ASC" ? "ASC" : "DESC";
+                source = source.OrderBy(string.Format("{0} {1}", sortColumn, sortOrder));
             }
-            source = source
-            .Skip(pageIndex * pageSize)
-            .Take(pageSize);
+
+            source = source.Skip(pageIndex * pageSize).Take(pageSize);
 
 
 #if DEBUG
@@ -118,19 +103,17 @@ namespace WorldCitiesAPI.Data
         /// Checks if the given property name exists
         /// to protect against SQL injection attacks
         /// </summary>
-        public static bool IsValidProperty(
-            string propertyName,
-            bool throwExceptionIfNotFound = true)
+        public static bool IsValidProperty(string propertyName, bool throwExceptionIfNotFound = true)
         {
             var prop = typeof(T).GetProperty(
                 propertyName,
                 BindingFlags.IgnoreCase |
                 BindingFlags.Public |
                 BindingFlags.Instance);
+
             if (prop == null && throwExceptionIfNotFound)
                 throw new NotSupportedException(
-                    string.Format(
-                        $"ERROR: Property '{propertyName}' does not exist.")
+                    string.Format($"ERROR: Property '{propertyName}' does not exist.")
                 );
             return prop != null;
         }
