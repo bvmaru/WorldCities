@@ -1,12 +1,12 @@
-<div class="login">
-    <h1>Login</h1>
+<div class="Reset">
+    <h1>Reset Password</h1>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-        <p>
+        <!-- <p>
             <mat-error *ngIf="loginResult && !loginResult.success">
                 <strong>ERROR</strong>: {{loginResult.message}}
             </mat-error>
-        </p>
+        </p> -->
 
         <!-- Name -->
         <mat-form-field>
@@ -19,26 +19,53 @@
         </mat-form-field>
 
         <!-- Lat -->
-        <mat-form-field>
+        <!-- <mat-form-field>
             <mat-label>Password:</mat-label>
             <input matInput type="password" formControlName="password" required placeholder="Insert Password">
             <mat-error *ngFor="let error of getErrors(form.get('password')!,
         'Password')">
                 {{error}}
             </mat-error>
+        </mat-form-field> -->
+
+
+    <div *ngIf="mail">
+
+        <mat-form-field>
+            <mat-label>Token:</mat-label>
+            <input matInput formControlName="token" required placeholder="Insert token">
+            <mat-error *ngFor="let error of getErrors(form.get('token')!,
+            'Token')">
+                {{error}}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>New Password:</mat-label>
+            <input matInput matInput type="password" formControlName="newPassword" required placeholder="Insert new password">
+            <mat-error *ngFor="let error of getErrors(form.get('newPassword')!,
+            'Invalid - password', { 'pattern' : 'requires minimum 8 letters, one capital letter, and one special sign' })">
+                {{error}}
+            </mat-error>
         </mat-form-field>
 
         <div>
             <button mat-flat-button color="primary" type="submit">
-                Login
+                Reset
             </button>
             <button mat-flat-button color="secondary" [routerLink]="['/']">
                 Cancel
             </button>
         </div>
+
+    </div>
+        
     </form>
 
-    <button mat-flat-button color="secondary"  [routerLink]="['/reset']">
-        Forgot password
-    </button>
+    <div>
+        <button mat-flat-button color="primary" class="mailbt"  (click)="sendMail()">
+            Send token
+        </button>
+    </div>
+
 </div>

@@ -89,9 +89,9 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(string email)
+        public async Task<IActionResult> ResetPassword(MailResetRequest email)
         {
-            var user = await _userManager.FindByNameAsync(email);
+            var user = await _userManager.FindByNameAsync(email.Email);
             if (user == null)
                 return Unauthorized(new BadRequestResult { });
 
@@ -108,7 +108,7 @@ namespace WorldCitiesAPI.Controllers
 
             await client.SendMailAsync(
                 new MailMessage(from: mail,
-                                to: email,
+                                to: email.Email,
                                 "Password reset",
                                 "Your password reset token: " + code));
             return Ok();

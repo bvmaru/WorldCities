@@ -5,6 +5,8 @@ import { Observable, Subject, tap } from 'rxjs';
 import { environment } from './../../environments/environment';
 import { LoginRequest } from './login-request';
 import { LoginResult } from './login-result';
+import { ResetMailRequest } from './reset-mail-request';
+import { NewPasswordRequest } from './new-password-request';
 
 @Injectable({
     providedIn: 'root',
@@ -62,5 +64,21 @@ export class AuthService {
 
     private setAuthStatus(isAuthenticated: boolean): void {
         this._authStatus.next(isAuthenticated);
+    }
+
+    resetMail(item: ResetMailRequest): Observable<string> {
+        var url = environment.baseUrl + "api/Account/ResetPassword";
+        return this.http.post<string>(url, item)
+    }
+
+    resetPassword(item: NewPasswordRequest): Observable<LoginResult> {
+        var url = environment.baseUrl + "api/Account/NewPassword";
+        return this.http.post<LoginResult>(url, item)
+            .pipe(tap(loginResult => {
+                if (loginResult.success && loginResult.token) {
+                    localStorage.setItem(this.tokenKey, loginResult.token);
+                    this.setAuthStatus(true);
+                }
+            }));
     }
 }

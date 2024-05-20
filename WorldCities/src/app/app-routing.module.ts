@@ -7,6 +7,7 @@ import { CountriesComponent } from './countries/countries.component';
 import { CountryEditComponent } from './countries/country-edit.component';
 import { LoginComponent } from './auth/login.component';
 import { RegisterComponent } from './auth/register.component';
+import { ResetComponent } from './auth/reset.component';
 import { AuthGuard } from './auth/auth.guard';
 
 
@@ -19,7 +20,8 @@ const routes: Routes = [
     // { path: 'country/:id', component: CountryEditComponent, canActivate: [AuthGuard] },
     // { path: 'country', component: CountryEditComponent, canActivate: [AuthGuard] },
     { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent }
+    { path: 'register', component: RegisterComponent },
+    { path: 'reset', component: ResetComponent }
 ];
 
 @NgModule({
