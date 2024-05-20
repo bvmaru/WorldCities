@@ -44,6 +44,17 @@ export class AuthService {
             }));
     }
 
+    register(item: LoginRequest): Observable<LoginResult> {
+        var url = environment.baseUrl + "api/Account/Register";
+        return this.http.post<LoginResult>(url, item)
+            .pipe(tap(loginResult => {
+                if (loginResult.success && loginResult.token) {
+                    localStorage.setItem(this.tokenKey, loginResult.token);
+                    this.setAuthStatus(true);
+                }
+            }));
+    }
+
     logout() {
         localStorage.removeItem(this.tokenKey);
         this.setAuthStatus(false);

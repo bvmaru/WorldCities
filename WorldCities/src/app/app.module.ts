@@ -15,6 +15,7 @@ import { CityEditComponent } from './cities/city-edit.component';
 import { CountriesComponent } from './countries/countries.component';
 import { CountryEditComponent } from './countries/country-edit.component';
 import { LoginComponent } from './auth/login.component';
+import { RegisterComponent } from './auth/register.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { ConnectionServiceModule, ConnectionServiceOptions, ConnectionServiceOptionsToken } from 'angular-connection-service';
@@ -28,7 +29,8 @@ import { ConnectionServiceModule, ConnectionServiceOptions, ConnectionServiceOpt
     CityEditComponent,
     CountriesComponent,
     CountryEditComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

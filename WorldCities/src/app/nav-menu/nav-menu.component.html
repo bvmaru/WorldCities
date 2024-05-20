@@ -1,6 +1,6 @@
 <header>
     <mat-toolbar color="primary" style="margin-top: 0;">
-        <button mat-icon-button [routerLink]="['/']">
+        <!-- <button mat-icon-button [routerLink]="['/']">
             <mat-icon>
                 home
             </mat-icon>
@@ -10,10 +10,13 @@
         </a>
         <a mat-flat-button color="primary" [routerLink]="['/countries']">
             Countries
-        </a>
+        </a> -->
         <span class="separator"></span>
         <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/login']">
             Login
+        </a>
+        <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/register']">
+            Register
         </a>
         <a *ngIf="isLoggedIn" mat-flat-button color="primary" (click)="onLogout()">
             Logout

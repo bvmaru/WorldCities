@@ -6,18 +6,20 @@ import { CityEditComponent } from './cities/city-edit.component';
 import { CountriesComponent } from './countries/countries.component';
 import { CountryEditComponent } from './countries/country-edit.component';
 import { LoginComponent } from './auth/login.component';
+import { RegisterComponent } from './auth/register.component';
 import { AuthGuard } from './auth/auth.guard';
 
 
 const routes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full' },
-    { path: 'cities', component: CitiesComponent },
-    { path: 'city/:id', component: CityEditComponent, canActivate: [AuthGuard] },
-    { path: 'city', component: CityEditComponent, canActivate: [AuthGuard] },
-    { path: 'countries', component: CountriesComponent },
-    { path: 'country/:id', component: CountryEditComponent, canActivate: [AuthGuard] },
-    { path: 'country', component: CountryEditComponent, canActivate: [AuthGuard] },
-    { path: 'login', component: LoginComponent }
+    // { path: 'cities', component: CitiesComponent },
+    // { path: 'city/:id', component: CityEditComponent, canActivate: [AuthGuard] },
+    // { path: 'city', component: CityEditComponent, canActivate: [AuthGuard] },
+    // { path: 'countries', component: CountriesComponent },
+    // { path: 'country/:id', component: CountryEditComponent, canActivate: [AuthGuard] },
+    // { path: 'country', component: CountryEditComponent, canActivate: [AuthGuard] },
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent }
 ];
 
 @NgModule({
